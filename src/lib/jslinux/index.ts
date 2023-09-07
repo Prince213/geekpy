@@ -23,18 +23,11 @@
  */
 'use strict';
 
-import Term from '$lib/jslinux/term';
+import JSTerminal, { type Terminal } from '$lib/jslinux/terminal';
 import _start from '$lib/jslinux/riscvemu64-wasm';
+import { getAbsoluteUrl } from '$lib/utils/url';
+import type { Nullable } from '$lib/utils/nullable';
 
-function getAbsoluteUrl(file: string) {
-	if (file.indexOf(':') >= 0) return file;
-	const path = window.location.pathname;
-	const p = path.lastIndexOf('/');
-	if (p < 0) return file;
-	return window.location.origin + path.slice(0, p + 1) + file;
-}
-
-type Nullable<T> = T | null;
 type CWrap = (
 	name: string,
 	returnType: Nullable<string>,
@@ -55,8 +48,14 @@ interface RISCVEmu64Internal {
 	[key: string]: unknown;
 }
 
+export interface Linux {
+	boot(): void;
+	mount(container: HTMLElement): void;
+	puts(str: string): void;
+}
+
 export default class JSLinux {
-	private readonly term: Term;
+	private readonly terminal: Terminal;
 	private readonly internal: RISCVEmu64Internal;
 
 	private putchar?: (c: number) => void;
@@ -65,7 +64,7 @@ export default class JSLinux {
 
 	constructor(config: string) {
 		/* start the terminal */
-		this.term = new Term(80, 30, (str: string) => this.puts(str));
+		this.terminal = new JSTerminal(80, 30, (str: string) => this.puts(str));
 
 		this.internal = {
 			preRun: () => {
@@ -83,14 +82,14 @@ export default class JSLinux {
 	}
 
 	public mount(container: HTMLElement) {
-		this.term.open(container);
+		this.terminal.open(container);
 		return this;
 	}
 
 	public boot() {
 		if (!this.started) {
-			this.term.write('Loading...\r\n');
-			_start(this.internal, this.term, null, null);
+			this.terminal.write('Loading...\r\n');
+			_start(this.internal, this.terminal, null, null);
 			this.started = true;
 		}
 		return this;

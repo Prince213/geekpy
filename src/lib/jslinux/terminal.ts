@@ -23,7 +23,13 @@
  */
 'use strict';
 
-export default class Term {
+export interface Terminal {
+	open(container: HTMLElement): void;
+	write(str: string): void;
+	getSize(): [number, number];
+}
+
+export default class JSTerminal {
 	constructor(width, height, handler, tot_height = 10000) {
 		this.w = width;
 		this.h = height;
@@ -189,7 +195,8 @@ export default class Term {
 		let http_link_len, http_link_str, bold, tmp, inverse;
 
 		function is_http_link_char(c) {
-			let str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=`.";
+			let str =
+				"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=`.";
 			return str.indexOf(String.fromCharCode(c)) >= 0;
 		}
 
@@ -222,7 +229,8 @@ export default class Term {
 				/* test for http link */
 				if (c == 0x68 && w - i >= 8 && http_link_len == 0) {
 					/* test http:// or https:// */
-					if ((line[i + 1] & 0xffff) == 0x74 &&
+					if (
+						(line[i + 1] & 0xffff) == 0x74 &&
 						(line[i + 2] & 0xffff) == 0x74 &&
 						(line[i + 3] & 0xffff) == 0x70 &&
 						(((line[i + 4] & 0xffff) == 0x3a &&
@@ -231,7 +239,8 @@ export default class Term {
 							((line[i + 4] & 0xffff) == 0x73 &&
 								(line[i + 5] & 0xffff) == 0x3a &&
 								(line[i + 6] & 0xffff) == 0x2f &&
-								(line[i + 7] & 0xffff) == 0x2f))) {
+								(line[i + 7] & 0xffff) == 0x2f))
+					) {
 						http_link_str = '';
 						j = 0;
 						while (i + j < w && is_http_link_char(line[i + j] & 0xffff)) {
@@ -975,7 +984,10 @@ export default class Term {
 		this.interceptBrowserExit(ev);
 	}
 	to_utf8(s) {
-		let i, n = s.length, r, c;
+		let i,
+			n = s.length,
+			r,
+			c;
 		r = '';
 		for (i = 0; i < n; i++) {
 			c = s.charCodeAt(i);
@@ -1076,7 +1088,8 @@ export default class Term {
 		document.body.className = document.body.className.replace(' noSelect', '');
 	}
 	pasteHandler(ev) {
-		let c = ev.clipboardData, str;
+		let c = ev.clipboardData,
+			str;
 		if (c) {
 			str = c.getData('text/plain');
 			if (this.utf8) str = this.to_utf8(str);
