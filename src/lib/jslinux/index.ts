@@ -43,6 +43,7 @@ type RISCVEmu64Internal = {
 	cwrap?: CWrap;
 	ccall?: CCall;
 	preRun?: VoidFunction;
+	postRun?: VoidFunction;
 
 	[key: string]: unknown;
 };
@@ -60,7 +61,7 @@ export function Linux<TBase extends ITerminal>(Base: Constructor<TBase>) {
 
 		private putchar?: (c: number) => void;
 
-		private started = false;
+		private resolve?: () => void;
 
 		constructor(config: string) {
 			this.terminal = new Base(80, 30, (str: string) => this.puts(str));
@@ -76,6 +77,12 @@ export function Linux<TBase extends ITerminal>(Base: Constructor<TBase>) {
 						['string', 'number', 'string', 'string', 'number', 'number', 'number', 'string'],
 						[`${window.location.origin}/${config}`, 128, '', '', 0, 0, 0, '']
 					);
+				},
+				postRun: () => {
+					if (this.resolve) {
+						this.resolve();
+						this.resolve = undefined;
+					}
 				}
 			};
 		}
@@ -85,11 +92,12 @@ export function Linux<TBase extends ITerminal>(Base: Constructor<TBase>) {
 			return this;
 		}
 
-		public boot() {
-			if (!this.started) {
+		public async boot() {
+			if (!this.resolve) {
 				this.terminal.write('Loading...\r\n');
+				const promise = new Promise<void>((resolve) => (this.resolve = resolve));
 				_start(this.internal, this.terminal, null, null);
-				this.started = true;
+				await promise;
 			}
 			return this;
 		}
