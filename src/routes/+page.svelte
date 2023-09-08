@@ -2,13 +2,8 @@
 	import Terminal from '$lib/componets/Terminal.svelte';
 	import PyLinux from '$lib/pylinux';
 	import { getContext } from 'svelte';
-	import type { Writable } from 'svelte/store';
 
-	const theme: Writable<string> = getContext('theme');
-
-	const changeTheme = () => {
-		theme.update((current) => (current === 'white' ? 'g100' : 'white'));
-	};
+	const changeTheme = getContext('changeTheme') as () => void;
 </script>
 
 <h1>Welcome to SvelteKit</h1>
