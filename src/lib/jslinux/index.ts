@@ -56,7 +56,7 @@ export interface ILinux {
 
 export function Linux<TBase extends ITerminal>(Base: Constructor<TBase>) {
 	return class WebLinux implements ILinux {
-		private readonly terminal: TBase;
+		protected readonly terminal: TBase;
 		private readonly internal: RISCVEmu64Internal;
 
 		private putchar?: (c: number) => void;

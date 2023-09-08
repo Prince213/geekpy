@@ -9,7 +9,7 @@
 	export let Base: ReturnType<typeof Linux> = JSLinux;
 
 	onMount(async () => {
-		new Base(env.PUBLIC_RISCVEMU_CONFIG).mount(terminal).boot();
+		window.linux = new Base(env.PUBLIC_RISCVEMU_CONFIG).mount(terminal).boot();
 	});
 </script>
 
