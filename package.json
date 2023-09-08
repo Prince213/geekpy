@@ -35,6 +35,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"strip-ansi": "^7.1.0"
+		"strip-ansi": "^7.1.0",
+		"ts-debounce": "^4.0.0"
 	}
 }
