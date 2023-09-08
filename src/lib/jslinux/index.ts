@@ -23,84 +23,89 @@
  */
 'use strict';
 
-import JSTerminal, { type Terminal } from '$lib/jslinux/terminal';
+import JSTerminal from '$lib/jslinux/terminal';
+import type { Constructor, ITerminal } from '$lib/jslinux/terminal';
 import _start from '$lib/jslinux/riscvemu64-wasm';
 import { getAbsoluteUrl } from '$lib/utils/url';
-import type { Nullable } from '$lib/utils/nullable';
 
 type CWrap = (
 	name: string,
-	returnType: Nullable<string>,
-	argTypes: Nullable<string>[]
+	returnType: string | null,
+	argTypes: (string | null)[]
 ) => (...args: unknown[]) => unknown;
 type CCall = (
 	func: string,
-	returnType: Nullable<string>,
-	argTypes: Nullable<string>[],
+	returnType: string | null,
+	argTypes: (string | null)[],
 	args: unknown[]
 ) => unknown;
 
-interface RISCVEmu64Internal {
+type RISCVEmu64Internal = {
 	cwrap?: CWrap;
 	ccall?: CCall;
 	preRun?: VoidFunction;
 
 	[key: string]: unknown;
-}
+};
 
-export interface Linux {
+export interface ILinux {
 	boot(): void;
 	mount(container: HTMLElement): void;
 	puts(str: string): void;
 }
 
-export default class JSLinux {
-	private readonly terminal: Terminal;
-	private readonly internal: RISCVEmu64Internal;
+export function Linux<TBase extends ITerminal>(Base: Constructor<TBase>) {
+	return class WebLinux implements ILinux {
+		private readonly terminal: TBase;
+		private readonly internal: RISCVEmu64Internal;
 
-	private putchar?: (c: number) => void;
+		private putchar?: (c: number) => void;
 
-	private started = false;
+		private started = false;
 
-	constructor(config: string) {
-		/* start the terminal */
-		this.terminal = new JSTerminal(80, 30, (str: string) => this.puts(str));
+		constructor(config: string) {
+			this.terminal = new Base(80, 30, (str: string) => this.puts(str));
 
-		this.internal = {
-			preRun: () => {
-				/* C functions called from javascript */
-				this.putchar = this.internal.cwrap?.('console_queue_char', null, ['number']);
+			this.internal = {
+				preRun: () => {
+					/* C functions called from javascript */
+					this.putchar = this.internal.cwrap?.('console_queue_char', null, ['number']);
 
-				this.internal.ccall?.(
-					'vm_start',
-					null,
-					['string', 'number', 'string', 'string', 'number', 'number', 'number', 'string'],
-					[getAbsoluteUrl(config), 128, '', '', 0, 0, 0, '']
-				);
-			}
-		};
-	}
-
-	public mount(container: HTMLElement) {
-		this.terminal.open(container);
-		return this;
-	}
-
-	public boot() {
-		if (!this.started) {
-			this.terminal.write('Loading...\r\n');
-			_start(this.internal, this.terminal, null, null);
-			this.started = true;
+					this.internal.ccall?.(
+						'vm_start',
+						null,
+						['string', 'number', 'string', 'string', 'number', 'number', 'number', 'string'],
+						[getAbsoluteUrl(config), 128, '', '', 0, 0, 0, '']
+					);
+				}
+			};
 		}
-		return this;
-	}
 
-	public puts(str: string) {
-		if (this.putchar) {
-			for (let i = 0; i < str.length; i++) {
-				this.putchar(str.charCodeAt(i));
-			}
+		public mount(container: HTMLElement) {
+			this.terminal.open(container);
+			return this;
 		}
-		return this;
-	}
+
+		public boot() {
+			if (!this.started) {
+				this.terminal.write('Loading...\r\n');
+				_start(this.internal, this.terminal, null, null);
+				this.started = true;
+			}
+			return this;
+		}
+
+		public puts(str: string) {
+			if (this.putchar) {
+				for (let i = 0; i < str.length; i++) {
+					this.putchar(str.charCodeAt(i));
+				}
+			}
+			return this;
+		}
+	};
 }
+
+export const JSLinux = Linux(JSTerminal);
+
+export { ITerminal, JSTerminal };

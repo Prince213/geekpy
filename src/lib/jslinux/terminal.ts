@@ -23,20 +23,27 @@
  */
 'use strict';
 
-export interface Terminal {
+export interface ITerminal {
 	open(container: HTMLElement): void;
 	write(str: string): void;
 	getSize(): [number, number];
 }
 
-export default class JSTerminal {
-	constructor(width, height, handler, tot_height = 10000) {
+export type Constructor<T extends ITerminal> = new (
+	cols: number,
+	rows: number,
+	handler: (str: string) => void,
+	maxHeight?: number
+) => T;
+
+export default class JSTerminal implements ITerminal {
+	constructor(width: number, height: number, handler, maxHeight = 10000) {
 		this.w = width;
 		this.h = height;
 
 		this.cur_h = height; /* current height of the scroll back buffer */
-		if (!tot_height || tot_height < height) tot_height = height;
-		this.tot_h = tot_height; /* maximum height of the scroll back buffer */
+		if (!maxHeight || maxHeight < height) maxHeight = height;
+		this.tot_h = maxHeight; /* maximum height of the scroll back buffer */
 		this.y_base = 0;
 		/* position of the current top screen line in the
 		 * scroll back buffer */
@@ -1108,7 +1115,7 @@ export default class JSTerminal {
 			this.output_queue = '';
 		}
 	}
-	getSize() {
+	getSize(): [number, number] {
 		return [this.w, this.h];
 	}
 }
