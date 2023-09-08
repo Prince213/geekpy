@@ -24,7 +24,7 @@
 'use strict';
 
 import JSTerminal from '$lib/jslinux/terminal';
-import type { Constructor, ITerminal } from '$lib/jslinux/terminal';
+import type { Constructor, ITerminal, TerminalHandler } from '$lib/jslinux/terminal';
 import _start from '$lib/jslinux/riscvemu64-wasm';
 import { getAbsoluteUrl } from '$lib/utils/url';
 
@@ -106,6 +106,7 @@ export function Linux<TBase extends ITerminal>(Base: Constructor<TBase>) {
 	};
 }
 
-export const JSLinux = Linux(JSTerminal);
+const JSLinux = Linux(JSTerminal);
 
-export { ITerminal, JSTerminal };
+export default JSLinux;
+export { ITerminal, TerminalHandler, JSTerminal };

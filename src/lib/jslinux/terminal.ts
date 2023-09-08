@@ -29,15 +29,17 @@ export interface ITerminal {
 	getSize(): [number, number];
 }
 
+export type TerminalHandler = (str: string) => void;
+
 export type Constructor<T extends ITerminal> = new (
 	cols: number,
 	rows: number,
-	handler: (str: string) => void,
+	handler: TerminalHandler,
 	maxHeight?: number
 ) => T;
 
 export default class JSTerminal implements ITerminal {
-	constructor(width: number, height: number, handler, maxHeight = 10000) {
+	constructor(width: number, height: number, handler: TerminalHandler, maxHeight = 10000) {
 		this.w = width;
 		this.h = height;
 
