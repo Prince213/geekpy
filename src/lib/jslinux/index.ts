@@ -26,7 +26,6 @@
 import JSTerminal from '$lib/jslinux/terminal';
 import type { Constructor, ITerminal, TerminalHandler } from '$lib/jslinux/terminal';
 import _start from '$lib/jslinux/riscvemu64-wasm';
-import { getAbsoluteUrl } from '$lib/utils/url';
 
 type CWrap = (
 	name: string,
@@ -75,7 +74,7 @@ export function Linux<TBase extends ITerminal>(Base: Constructor<TBase>) {
 						'vm_start',
 						null,
 						['string', 'number', 'string', 'string', 'number', 'number', 'number', 'string'],
-						[getAbsoluteUrl(config), 128, '', '', 0, 0, 0, '']
+						[`${window.location.origin}/${config}`, 128, '', '', 0, 0, 0, '']
 					);
 				}
 			};
