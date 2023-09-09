@@ -2,6 +2,14 @@ import PyTerminal from '$lib/pylinux/terminal';
 import { Linux } from '$lib/jslinux';
 
 const MAGIC = /\[(?:geekpy|root)@localhost .+\]\$ $/;
+
+function trimStartString(str: string, prefix: string): string {
+	if (str.startsWith(prefix)) {
+		return str.substring(prefix.length);
+	}
+	return str;
+}
+
 export default class PyLinux extends Linux(PyTerminal) {
 	constructor(config: string) {
 		super(config);
@@ -16,13 +24,8 @@ export default class PyLinux extends Linux(PyTerminal) {
 		const promise = this.terminal.wait((str) => MAGIC.test(str));
 		this.cmd(text);
 		let result = await promise;
-		result = result.substring(result.indexOf(text) + text.length + 1);
+		result = trimStartString(result, `${text}\r\n`);
 		result = result.replace(MAGIC, '');
-		if (result.startsWith('\r') || result.startsWith('\n')) {
-			result = result.substring(1);
-		} else if (result.startsWith('\r\n')) {
-			result = result.substring(2);
-		}
 		if (result.endsWith('\r\n')) {
 			result = result.substring(0, result.length - 2);
 		}
