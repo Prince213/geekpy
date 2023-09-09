@@ -1,6 +1,9 @@
 import PyTerminal from '$lib/pylinux/terminal';
 import { Linux } from '$lib/jslinux';
 
+const ASCIIEnter = '\x0d';
+const ASCIIEOM = '\x03';
+
 const MAGIC = /\[(?:geekpy|root)@localhost .+\]\$ $/;
 
 function trimStartString(str: string, prefix: string): string {
@@ -15,15 +18,24 @@ export default class PyLinux extends Linux(PyTerminal) {
 		super(config);
 	}
 
-	public cmd(text: string): void {
-		this.puts(text + '\x0d');
+	private cmd(text: string): void {
+		this.puts(text + ASCIIEnter);
 	}
 
-	public async exec(text: string): Promise<string> {
+	public abort(): void {
+		this.cmd(ASCIIEOM);
+		this.terminal.abort();
+	}
+
+	public async exec(text: string): Promise<string | null> {
 		await this.terminal.park();
 		const promise = this.terminal.wait((str) => MAGIC.test(str));
 		this.cmd(text);
 		let result = await promise;
+		if (result === null) {
+			return null;
+		}
+
 		result = trimStartString(result, `${text}\r\n`);
 		result = result.replace(MAGIC, '');
 		if (result.endsWith('\r\n')) {

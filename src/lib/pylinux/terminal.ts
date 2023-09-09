@@ -2,11 +2,11 @@ import type { ITerminal, TerminalHandler } from '$lib/jslinux';
 import stripAnsi from 'strip-ansi';
 
 type WaiterPredicate = (str: string) => boolean;
-type WaiterResolve = (str: string) => void;
+type WaiterResolve = (str: string | null) => void;
 export type Waiter = {
 	predicate: WaiterPredicate;
 	resolve: WaiterResolve;
-	promise: Promise<string>;
+	promise: Promise<string | null>;
 };
 
 export default class PyTerminal implements ITerminal {
@@ -45,7 +45,7 @@ export default class PyTerminal implements ITerminal {
 		}
 	}
 
-	public async wait(predicate: WaiterPredicate): Promise<string> {
+	public async wait(predicate: WaiterPredicate): Promise<string | null> {
 		this.buffer = '';
 		return new Promise((resolve) => {
 			this.waiter = {
@@ -58,6 +58,13 @@ export default class PyTerminal implements ITerminal {
 				})
 			};
 		});
+	}
+
+	public abort(): void {
+		if (this.waiter) {
+			this.waiter.resolve(null);
+			this.waiter = undefined;
+		}
 	}
 
 	public getSize(): [number, number] {
