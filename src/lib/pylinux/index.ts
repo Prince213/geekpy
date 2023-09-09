@@ -12,6 +12,7 @@ export default class PyLinux extends Linux(PyTerminal) {
 	}
 
 	public async exec(text: string): Promise<string> {
+		await this.terminal.park();
 		const promise = this.terminal.wait((str) => MAGIC.test(str));
 		this.cmd(text);
 		let result = await promise;
@@ -34,6 +35,7 @@ export default class PyLinux extends Linux(PyTerminal) {
 	}
 
 	public async boot(): Promise<this> {
+		await this.terminal.park();
 		const promise = this.terminal.wait((str) => MAGIC.test(str));
 		await super.boot();
 		await promise;

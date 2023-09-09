@@ -39,11 +39,13 @@ export default class PyTerminal implements ITerminal {
 		}
 	}
 
-	public async wait(predicate: WaiterPredicate): Promise<string> {
-		if (this.waiter) {
+	public async park(): Promise<void> {
+		while (this.waiter) {
 			await this.waiter.promise;
 		}
+	}
 
+	public async wait(predicate: WaiterPredicate): Promise<string> {
 		this.buffer = '';
 		return new Promise((resolve) => {
 			this.waiter = {
