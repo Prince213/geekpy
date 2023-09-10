@@ -11,7 +11,8 @@ export type Waiter = {
 
 export default class PyTerminal implements ITerminal {
 	private buffer = '';
-	private waiter?: Waiter;
+	private cmd?: Waiter;
+	private task?: Waiter;
 
 	constructor(
 		private readonly width: number,
@@ -25,35 +26,58 @@ export default class PyTerminal implements ITerminal {
 	}
 
 	public write(str: string): void {
-		this.buffer += stripAnsi(str);
+		str = stripAnsi(str);
+		if (this.task && this.task.predicate(str)) {
+			const { resolve } = this.task;
+			this.task = undefined;
+			resolve(str);
+		} else if (this.cmd && this.cmd.predicate(str)) {
+			const { resolve } = this.cmd;
+			this.cmd = undefined;
+			resolve(this.buffer);
+		}
+
+		this.buffer += str;
 		if (this.buffer.length > this.maxHeight * this.width) {
 			this.buffer = this.buffer.slice(this.buffer.length - this.maxHeight * this.width);
 		}
+	}
 
-		if (this.waiter) {
-			const { predicate, resolve } = this.waiter;
-			if (predicate(this.buffer)) {
-				this.waiter = undefined;
-				resolve(this.buffer);
-			}
+	public async block(): Promise<void> {
+		while (this.task) {
+			await this.task.promise;
 		}
 	}
 
+	public async watch(predicate: WaiterPredicate): Promise<string | null> {
+		return new Promise((resolve) => {
+			this.task = {
+				predicate,
+				resolve,
+				promise: new Promise((resolve) => {
+					if (this.task) {
+						this.task.resolve = resolve;
+					}
+				})
+			};
+		});
+	}
+
 	public async park(): Promise<void> {
-		while (this.waiter) {
-			await this.waiter.promise;
+		while (this.cmd) {
+			await this.cmd.promise;
 		}
 	}
 
 	public async wait(predicate: WaiterPredicate): Promise<string | null> {
 		this.buffer = '';
 		return new Promise((resolve) => {
-			this.waiter = {
+			this.cmd = {
 				predicate,
 				resolve,
 				promise: new Promise((resolve) => {
-					if (this.waiter) {
-						this.waiter.resolve = resolve;
+					if (this.cmd) {
+						this.cmd.resolve = resolve;
 					}
 				})
 			};
@@ -61,9 +85,9 @@ export default class PyTerminal implements ITerminal {
 	}
 
 	public abort(): void {
-		if (this.waiter) {
-			this.waiter.resolve(null);
-			this.waiter = undefined;
+		if (this.cmd) {
+			this.cmd.resolve(null);
+			this.cmd = undefined;
 		}
 	}
 
