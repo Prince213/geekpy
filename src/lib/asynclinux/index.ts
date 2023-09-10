@@ -1,4 +1,4 @@
-import PyTerminal from '$lib/pylinux/terminal';
+import AsyncTerminal from '$lib/asynclinux/terminal';
 import { Linux } from '$lib/jslinux';
 
 const ASCIIEnter = '\x0d';
@@ -14,7 +14,7 @@ function trimStartString(str: string, prefix: string): string {
 	return str;
 }
 
-export default class PyLinux extends Linux(PyTerminal) {
+export default class AsyncLinux extends Linux(AsyncTerminal) {
 	constructor(config: string) {
 		super(config);
 	}
@@ -75,4 +75,4 @@ export default class PyLinux extends Linux(PyTerminal) {
 		return this;
 	}
 }
-export { PyTerminal };
+export { AsyncTerminal as PyTerminal };

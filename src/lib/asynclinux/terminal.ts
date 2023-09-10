@@ -9,7 +9,7 @@ export type Waiter = {
 	promise: Promise<string | null>;
 };
 
-export default class PyTerminal implements ITerminal {
+export default class AsyncTerminal implements ITerminal {
 	private buffer = '';
 	private cmd?: Waiter;
 	private task?: Waiter;
