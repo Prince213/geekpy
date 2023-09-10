@@ -23,12 +23,17 @@ export default class AsyncLinux extends Linux(AsyncTerminal) {
 		this.puts(text + ASCIIEnter);
 	}
 
+	public async kill(): Promise<void> {
+		const pid = await this.exec(`ps -ef | grep '[s]pawn' | awk '{print $1}'`);
+		this.terminal.kill();
+		this.cmd(`kill -9 ${pid}`);
+	}
+
 	public async spawn(cmd: string): Promise<number | null> {
 		await this.terminal.block();
 		const promise = this.terminal.watch((str) => TASK_MAGIC.test(str));
 		this.cmd('./spawn.sh ' + cmd);
 		const result = await promise;
-		console.log(result);
 		if (result === null) {
 			return null;
 		}
@@ -41,9 +46,9 @@ export default class AsyncLinux extends Linux(AsyncTerminal) {
 		return parseInt(match[1]);
 	}
 
-	public abort(): void {
-		this.cmd(ASCIIEOM);
+	public async abort(): Promise<void> {
 		this.terminal.abort();
+		this.cmd(ASCIIEOM);
 	}
 
 	public async exec(text: string): Promise<string | null> {

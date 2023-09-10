@@ -86,8 +86,17 @@ export default class AsyncTerminal implements ITerminal {
 
 	public abort(): void {
 		if (this.cmd) {
-			this.cmd.resolve(null);
+			const { resolve } = this.cmd;
 			this.cmd = undefined;
+			resolve(null);
+		}
+	}
+
+	public kill(): void {
+		if (this.task) {
+			const { resolve } = this.task;
+			this.task = undefined;
+			resolve(null);
 		}
 	}
 
