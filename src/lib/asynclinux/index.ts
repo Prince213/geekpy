@@ -25,9 +25,13 @@ export default class AsyncLinux extends Linux(AsyncTerminal) {
 	}
 
 	public async kill(): Promise<void> {
-		const pid = await this.exec(`ps -ef | grep '[s]pawn' | awk '{print $1}'`);
+		let pid = await this.exec(`ps -ef | grep '[s]pawn.sh' | awk '{print $1}'`);
+		await this.exec(`kill -9 ${pid}`);
+		pid = await this.exec(`ps -ef | grep '[m]ain.sh' | awk '{print $1}'`);
+		await this.exec(`kill -9 ${pid}`);
+		pid = await this.exec(`ps -ef | grep '[m]ain.py' | awk '{print $1}'`);
+		await this.exec(`kill -9 ${pid}`);
 		this.terminal.kill();
-		this.cmd(`kill -9 ${pid}`);
 	}
 
 	public async spawn(cmd: string): Promise<number | null> {
@@ -48,8 +52,8 @@ export default class AsyncLinux extends Linux(AsyncTerminal) {
 	}
 
 	public async abort(): Promise<void> {
-		this.terminal.abort();
 		this.cmd(ASCIIEOM);
+		this.terminal.abort();
 	}
 
 	public async exec(text: string): Promise<string | null> {

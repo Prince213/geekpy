@@ -35,7 +35,7 @@
 		output = history.from(await executor.exec(`cat stdout`));
 	};
 
-	const submit = async (event: SubmitEvent) => {
+	const puts = async (event: SubmitEvent) => {
 		event.preventDefault();
 		if (!input || !daemon || !executor) return;
 		daemon.pause();
@@ -44,6 +44,11 @@
 		await executor.exec(`echo -e ${escaped} > stdin`);
 		history.push({ source: HistorySource.Input, value: input });
 		daemon.resume();
+	};
+
+	const kill = async () => {
+		if (!executor) return;
+		await executor.kill();
 	};
 
 	onMount(async () => {
@@ -57,6 +62,7 @@
 </script>
 
 <Button on:click={execute}>Execute</Button>
+<Button on:click={kill}>Kill</Button>
 <Tile>
 	{#if output}
 		<pre>{output}</pre>
@@ -64,7 +70,7 @@
 		<p>Output will be shown here.</p>
 	{/if}
 </Tile>
-<Form on:submit={submit}>
+<Form on:submit={puts}>
 	<TextInput labelText="Input" placeholder="Enter your input here" bind:value={input} />
 	<Button type="submit">Submit</Button>
 </Form>
