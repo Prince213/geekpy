@@ -5,22 +5,25 @@
 		SkipToContent,
 		ToastNotification,
 		HeaderUtilities,
-		HeaderGlobalAction
+		HeaderGlobalAction,
+		Theme
 	} from 'carbon-components-svelte';
-	import { onMount, setContext } from 'svelte';
+	import { setContext } from 'svelte';
 	import { writable, type Writable } from 'svelte/store';
 	import { debounce } from 'ts-debounce';
 	import BrightnessContrast from 'carbon-icons-svelte/lib/BrightnessContrast.svelte';
 	import { slide } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 
-	const theme = writable('white');
+	const theme: Writable<'white' | 'g100'> = writable('white');
+	setContext('theme', theme);
 	const changeTheme = () => {
 		theme.update((current) => (current === 'white' ? 'g100' : 'white'));
 	};
 	setContext('changeTheme', changeTheme);
 
 	const error: Writable<{ reason: string; when: string } | null> = writable(null);
+	setContext('error', error);
 	const notifyError = debounce((message: string) => {
 		error.set({
 			reason: message,
@@ -33,15 +36,13 @@
 		notifyError.cancel();
 		error.set(null);
 	};
-
-	onMount(() => {
-		theme.subscribe((value) => document?.documentElement?.setAttribute('theme', value));
-	});
 </script>
 
 <svelte:head>
 	<link rel="stylesheet" href="https://unpkg.com/carbon-components-svelte/css/all.css" />
 </svelte:head>
+
+<Theme bind:theme={$theme} />
 <Header href="/">
 	<svelte:fragment slot="platform">{'{Geekpy: 🐍}'}</svelte:fragment>
 	<svelte:fragment slot="skip-to-content">
