@@ -8,14 +8,14 @@
 		HeaderGlobalAction,
 		Theme
 	} from 'carbon-components-svelte';
-	import { setContext } from 'svelte';
+	import { onMount, setContext } from 'svelte';
 	import { writable, type Writable } from 'svelte/store';
 	import { debounce } from 'ts-debounce';
 	import BrightnessContrast from 'carbon-icons-svelte/lib/BrightnessContrast.svelte';
 	import { slide } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 
-	const theme: Writable<'white' | 'g100'> = writable('white');
+	const theme: Writable<'white' | 'g100' | undefined> = writable(undefined);
 	setContext('theme', theme);
 	const changeTheme = () => {
 		theme.update((current) => (current === 'white' ? 'g100' : 'white'));
@@ -36,6 +36,14 @@
 		notifyError.cancel();
 		error.set(null);
 	};
+
+	onMount(() => {
+		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+			theme.set('g100');
+		} else {
+			theme.set('white');
+		}
+	});
 </script>
 
 <svelte:head>
