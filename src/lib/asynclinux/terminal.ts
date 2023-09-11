@@ -1,9 +1,9 @@
 import type { ITerminal, TerminalHandler } from '$lib/jslinux';
 import stripAnsi from 'strip-ansi';
 
-type WaiterPredicate = (str: string) => boolean;
-type WaiterResolve = (str: string | null) => void;
-type Waiter = {
+export type WaiterPredicate = (str: string) => boolean;
+export type WaiterResolve = (str: string | null) => void;
+export type Waiter = {
 	predicate: WaiterPredicate;
 	resolve: WaiterResolve;
 	promise: Promise<string | null>;

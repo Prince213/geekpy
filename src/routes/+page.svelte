@@ -5,6 +5,7 @@
 	import AsyncExecutor from '$lib/componets/executors/AsyncExecutor.svelte';
 	import Editor from '$lib/componets/Editor.svelte';
 	import { SUM_OF_TWO } from '$lib/examples';
+	import PyExecutor from '$lib/componets/executors/PyExecutor.svelte';
 
 	const notifyError = getContext('notifyError') as (msg: string) => void;
 	const breakpointSize = breakpointObserver();
@@ -28,7 +29,8 @@
 			<Editor bind:value />
 		</div>
 		<div class="executor">
-			<AsyncExecutor config={PUBLIC_RISCVEMU_CONFIG} {onError} {value} />
+			<PyExecutor config={PUBLIC_RISCVEMU_CONFIG} {onError} {value} />
+			<!-- <AsyncExecutor config={PUBLIC_RISCVEMU_CONFIG} {onError} {value} /> -->
 		</div>
 	</section>
 </div>

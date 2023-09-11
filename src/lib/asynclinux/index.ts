@@ -2,8 +2,8 @@ import AsyncTerminal from '$lib/asynclinux/terminal';
 import AsyncDaemon from '$lib/asynclinux/daemon';
 import { Linux } from '$lib/jslinux';
 
-const ASCIIEnter = '\x0d';
-const ASCIIEOM = '\x03';
+export const ASCIIEnter = '\x0d';
+export const ASCIIEOM = '\x03';
 
 const CMD_MAGIC = /\[(?:geekpy|root)@localhost .+\]\$ $/;
 const TASK_MAGIC = /y\[wqhHpsu#%adftr\*K6\]-86\?hn8Jmm\*A \[(\d+)\]/;
