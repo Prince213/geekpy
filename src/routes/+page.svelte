@@ -4,13 +4,13 @@
 	import { breakpointObserver } from 'carbon-components-svelte';
 	import AsyncExecutor from '$lib/componets/executors/AsyncExecutor.svelte';
 	import Editor from '$lib/componets/Editor.svelte';
-	import { example } from '$lib/geekpy';
+	import { pySum } from '$lib/examples';
 
 	const notifyError = getContext('notifyError') as (msg: string) => void;
 	const breakpointSize = breakpointObserver();
 	const breakpointIsMobile = breakpointSize.smallerThan('md');
 
-	let value = example;
+	let value = pySum;
 
 	const onError = (msg: string) => {
 		notifyError(msg);

@@ -2,7 +2,7 @@
 	import AsyncLinux, { AsyncDaemon } from '$lib/asynclinux';
 	import { Form, Button, TextInput, Tile } from 'carbon-components-svelte';
 	import { onMount } from 'svelte';
-	import { History, HistorySource } from '$lib/geekpy';
+	import { History, HistorySource } from '$lib/executors';
 
 	export let config: string;
 	export let onError: (msg: string) => void;
