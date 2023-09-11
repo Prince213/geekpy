@@ -51,36 +51,48 @@
 </svelte:head>
 
 <Theme bind:theme={$theme} />
-<Header href="/">
-	<svelte:fragment slot="platform">{'{Geekpy: 🐍}'}</svelte:fragment>
-	<svelte:fragment slot="skip-to-content">
-		<SkipToContent />
-	</svelte:fragment>
-	<HeaderUtilities>
-		<HeaderGlobalAction icon={BrightnessContrast} on:click={changeTheme} />
-	</HeaderUtilities>
-</Header>
-<Content>
-	<slot />
-</Content>
-{#if $error}
-	<div
-		class="error-container"
-		transition:slide={{ delay: 250, duration: 300, easing: quintOut, axis: 'x' }}
-	>
-		<ToastNotification
-			title="Error"
-			subtitle={$error.reason}
-			caption={$error.when}
-			on:close={cancelError}
-		/>
-	</div>
-{/if}
+
+<section class="main">
+	<Header href="/">
+		<svelte:fragment slot="platform">{'{Geekpy: 🐍}'}</svelte:fragment>
+		<svelte:fragment slot="skip-to-content">
+			<SkipToContent />
+		</svelte:fragment>
+		<HeaderUtilities>
+			<HeaderGlobalAction icon={BrightnessContrast} on:click={changeTheme} />
+		</HeaderUtilities>
+	</Header>
+	<main class="content"><slot /></main>
+
+	{#if $error}
+		<div
+			class="error"
+			transition:slide={{ delay: 250, duration: 300, easing: quintOut, axis: 'x' }}
+		>
+			<ToastNotification
+				title="Error"
+				subtitle={$error.reason}
+				caption={$error.when}
+				on:close={cancelError}
+			/>
+		</div>
+	{/if}
+</section>
 
 <style>
-	.error-container {
+	.error {
 		position: fixed;
 		bottom: 0;
 		right: 0;
+	}
+
+	.main {
+		height: calc(100vh - 3rem);
+	}
+
+	.content {
+		height: 100%;
+		margin-top: 3rem;
+		padding: 2rem;
 	}
 </style>
