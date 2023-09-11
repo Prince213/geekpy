@@ -1,4 +1,5 @@
 import AsyncTerminal from '$lib/asynclinux/terminal';
+import AsyncDaemon from '$lib/asynclinux/daemon';
 import { Linux } from '$lib/jslinux';
 
 const ASCIIEnter = '\x0d';
@@ -32,7 +33,7 @@ export default class AsyncLinux extends Linux(AsyncTerminal) {
 	public async spawn(cmd: string): Promise<number | null> {
 		await this.terminal.block();
 		const promise = this.terminal.watch((str) => TASK_MAGIC.test(str));
-		this.cmd('./spawn.sh ' + cmd);
+		await this.exec(`./spawn.sh ${cmd}`);
 		const result = await promise;
 		if (result === null) {
 			return null;
@@ -80,4 +81,4 @@ export default class AsyncLinux extends Linux(AsyncTerminal) {
 		return this;
 	}
 }
-export { AsyncTerminal as PyTerminal };
+export { AsyncTerminal, AsyncDaemon };
