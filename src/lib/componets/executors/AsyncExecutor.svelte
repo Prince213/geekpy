@@ -1,6 +1,6 @@
 <script lang="ts">
 	import AsyncLinux, { AsyncDaemon } from '$lib/asynclinux';
-	import { Form, Button, TextInput, Tile } from 'carbon-components-svelte';
+	import { Form, Button, TextInput, Tile, CodeSnippet } from 'carbon-components-svelte';
 	import { onMount } from 'svelte';
 	import { History, HistorySource } from '$lib/executors';
 
@@ -65,7 +65,7 @@
 <Button on:click={kill}>Kill</Button>
 <Tile>
 	{#if output}
-		<pre>{output}</pre>
+		<CodeSnippet type="multi" code={output} />
 	{:else}
 		<p>Output will be shown here.</p>
 	{/if}

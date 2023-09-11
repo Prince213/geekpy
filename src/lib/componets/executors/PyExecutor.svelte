@@ -1,6 +1,6 @@
 <script lang="ts">
 	import PyLinux from '$lib/pylinux';
-	import { Form, Button, TextInput, Tile } from 'carbon-components-svelte';
+	import { Form, Button, TextInput, Tile, CodeSnippet } from 'carbon-components-svelte';
 	import { onMount } from 'svelte';
 
 	export let config: string;
@@ -52,7 +52,7 @@
 <Button on:click={abort}>Kill</Button>
 <Tile>
 	{#if output}
-		<pre>{output}</pre>
+		<CodeSnippet type="multi" code={output} />
 	{:else}
 		<p>Output will be shown here.</p>
 	{/if}
