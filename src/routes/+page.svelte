@@ -29,8 +29,8 @@
 			<Editor bind:value />
 		</div>
 		<div class="executor">
-			<PyExecutor config={PUBLIC_RISCVEMU_CONFIG} {onError} {value} />
-			<!-- <AsyncExecutor config={PUBLIC_RISCVEMU_CONFIG} {onError} {value} /> -->
+			<!-- <PyExecutor config={PUBLIC_RISCVEMU_CONFIG} {onError} {value} /> -->
+			<AsyncExecutor config={PUBLIC_RISCVEMU_CONFIG} {onError} {value} />
 		</div>
 	</section>
 </div>
