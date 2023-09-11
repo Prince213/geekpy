@@ -4,7 +4,7 @@
 	import { breakpointObserver } from 'carbon-components-svelte';
 	import AsyncExecutor from '$lib/componets/executors/AsyncExecutor.svelte';
 	import Editor from '$lib/componets/Editor.svelte';
-	import example from '$lib/geekpy/example.py?raw';
+	import { example } from '$lib/geekpy';
 
 	const notifyError = getContext('notifyError') as (msg: string) => void;
 	const breakpointSize = breakpointObserver();
@@ -25,7 +25,7 @@
 
 	<section class="ide" style:padding={$breakpointIsMobile ? '' : '2rem'}>
 		<div class="editor">
-			<Editor {value} />
+			<Editor bind:value />
 		</div>
 		<div class="executor">
 			<AsyncExecutor config={PUBLIC_RISCVEMU_CONFIG} {onError} {value} />
