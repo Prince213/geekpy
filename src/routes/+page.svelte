@@ -24,7 +24,7 @@
 		Either it is true or not, Geekpy 🐍 will always be available for you as a python IDE on the web.
 	</p>
 
-	<section class="ide" style:padding={$breakpointIsMobile ? '' : '2rem'}>
+	<section class={$breakpointIsMobile ? 'ide-mobile' : 'ide'}>
 		<div class="editor">
 			<Editor bind:value />
 		</div>
@@ -44,9 +44,15 @@
 
 	.ide {
 		width: 100%;
+		padding: 2rem;
 		flex: 1;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
+	}
+
+	.ide-mobile {
+		width: 100%;
+		padding: 0;
 	}
 
 	.editor {
