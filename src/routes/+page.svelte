@@ -19,7 +19,7 @@
 </script>
 
 <div class="main">
-	<h1>Hope SI100b finds you well.</h1>
+	<h1>Hope SI100 finds you well.</h1>
 	<p>
 		Either it is true or not, Geekpy 🐍 will always be available for you as a python IDE on the web.
 	</p>
